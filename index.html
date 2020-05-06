@@ -199,6 +199,9 @@ background-repeat:no-repeat;
             </ul>
             <button id="previous"><< Previous</button>
             <button id="next">Next >></button>
+            <button id="previous">Previous</button>
+<span id="curidx"></span>
+<button id="next">Next</button>
         </div>
     </div>
 
@@ -573,6 +576,39 @@ background-repeat:no-repeat;
             addDataAttributes();
 
         })();
+function show() { 
+  var item = myItemObjectArray[currentItemIndex];
+  document.getElementById("curidx").innerHTML=item.itemId+":"+item.itemName
+  document.getElementById("previous").disabled=currentItemIndex<=0;
+  document.getElementById("next").disabled=currentItemIndex>=myItemObjectArray.length-1;
+
+}
+
+var myItemObjectArray = new Array();
+var currentItemIndex = 5;
+window.onload=function() {
+  document.getElementById("previous").onclick=function() {
+    currentItemIndex--;
+    if (currentItemIndex<=0) {
+      currentItemIndex=0;
+    }
+    show();       
+  }
+  document.getElementById("next").onclick=function() {
+    currentItemIndex++;
+    if (currentItemIndex>=myItemObjectArray.length-1) {
+      currentItemIndex=myItemObjectArray.length-1;
+    }
+    show();       
+  }
+  for(i=0;i<10;i++) {
+    var ItemCatalog = new Object();
+    ItemCatalog.itemId = i;
+    ItemCatalog.itemName = "a"+i;
+    myItemObjectArray.push(ItemCatalog);
+  }
+  show();
+}
     </script>
 </body>
 
