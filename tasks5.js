@@ -1,7 +1,6 @@
 // Number of questions. Max=25.
 const NUMQUESTIONS = 5;
 
-
 // List of questions.
 let questionsMap = new Map();
 
@@ -186,7 +185,10 @@ let questionContainer = document.getElementById("question"),
     answerB = document.getElementById("second-answer"),
     answerC = document.getElementById("third-answer"),
     answerD = document.getElementById("fourth-answer"),
+    previous = document.getElementById("previous"),
+    next = document.getElementById("next"),
     scoreCounter = document.getElementById("counter");
+
 
 // Add question keys to the quiz sequence array.
 function determineSequence() {
@@ -218,18 +220,27 @@ function determineSequence() {
     }
 
     // Randomize quizSequence.
-    quizSequence = shuffle(quizSequence);
+
 }
 
 // Get the next question.
 function getNextQuestion() {
 
+    let qn;
 
-    // Up the counter.
+    let currentI = quizSequence.indexOf(quizStats.currentQuestion)
+
     quizStats.counter++;
 
+    clearClasses()
+
+    if (currentI == quizSequence.length - 1) {
+        qn = quizSequence[0]
+    } else {
+        qn = quizSequence[currentI + 1]
+    }
     // Get the question number.
-    let qn = quizSequence.shift();
+
 
     // Set up the question and answers.
     let a = questionsMap.get(qn).a,
@@ -245,11 +256,49 @@ function getNextQuestion() {
     answerC.textContent = c;
     answerD.textContent = d;
 
-    // Track the current question.
-    quizStats.currentQuestion = qn;
+
+    quizStats.currentQuestion++
+
+
+        if (quizStats.counter == 20) {
+            document.getElementById("next").style.display = 'none'
+
+            return
+        }
 }
 
+function getPreviousQuestion() {
+    let qn;
 
+    quizStats.counter -= 1;
+
+    let currentI = quizSequence.indexOf(quizStats.currentQuestion)
+
+    if (currentI == -1) {
+
+    } else {
+        quizStats.currentQuestion -= 1
+        qn = quizSequence[currentI - 1]
+    }
+
+
+    // Set up the question and answers.
+    let a = questionsMap.get(qn).a,
+        b = questionsMap.get(qn).b,
+        c = questionsMap.get(qn).c,
+        d = questionsMap.get(qn).d,
+        question = questionsMap.get(qn).question;
+
+    // Print the questions.
+    questionContainer.textContent = question;
+    answerA.textContent = a;
+    answerB.textContent = b;
+    answerC.textContent = c;
+    answerD.textContent = d;
+
+
+
+}
 
 // Add event listeners.
 function addEventListeners() {
@@ -257,7 +306,8 @@ function addEventListeners() {
     answerB.addEventListener("click", checkTheAnswer);
     answerC.addEventListener("click", checkTheAnswer);
     answerD.addEventListener("click", checkTheAnswer);
-
+    previous.addEventListener("click", getPreviousQuestion);
+    next.addEventListener("click", getNextQuestion);
 }
 
 // Add data attributes.
@@ -275,7 +325,7 @@ function checkTheAnswer() {
         correctAnswer = questionsMap.get(quizStats.currentQuestion).answer;
 
     // Check given and correct answers.
-    if (givenAnswer == correctAnswer) {
+    if (givenAnswer === correctAnswer) {
         quizStats.correct++;
         this.classList.add("correct");
     } else {
@@ -285,39 +335,17 @@ function checkTheAnswer() {
 
     // Update the counter.
     scoreCounter.textContent = quizStats.correct;
-    if (givenAnswer == 1) {
-        quizStats.correct++;
-    }
-
-
-
-
 
     // Check if max num of questions has been reached.
+    if (quizStats.counter < NUMQUESTIONS) {
 
-
-    document.getElementById("next").onclick = function() {
-        if (quizStats.counter < NUMQUESTIONS) {
-            setTimeout(clearClasses, 20);
-            setTimeout(getNextQuestion, 200);
-        }
-        // If so, stop the quiz.
-        else {
-            showTheResults();
-        }
+        setTimeout(getNextQuestion, 500);
+        return
+    } else {
+        document.getElementById("next").style.display = 'none'
+        showTheResults();
     }
-    document.getElementById("previous").onclick = function() {
-        if (quizStats.counter < NUMQUESTIONS) {
-            setTimeout(clearClasses, 20);
-            setTimeout(question, 200);
-        }
-        // If so, stop the quiz.
-        else {
-            showTheResults();
-        }
 
-
-    }
 }
 
 // Clear classes.
@@ -349,7 +377,6 @@ function showTheResults() {
     document.getElementsByClassName("results-container")[0].classList.add("display");
 }
 
-
 //Let's start!
 (function startQuiz() {
     // Init.
@@ -358,5 +385,6 @@ function showTheResults() {
     getNextQuestion();
     addEventListeners();
     addDataAttributes();
+
 
 })();
