@@ -34,7 +34,7 @@ function quizQuestions() {
         answer: "d",
     });
     questionsMap.set(3, {
-        question: "What State is Hng situated?",
+        question: "What State is Hng headquarters situated?",
         a: "Abuja.",
         b: "Lagos.",
         c: "Imo.",
